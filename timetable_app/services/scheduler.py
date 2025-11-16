@@ -2,6 +2,7 @@ from typing import List, Dict, Tuple, Optional, Set
 import random
 from collections import defaultdict
 from django.db import transaction
+from django.utils import timezone
 from timetable_app.models import (
     Subject, TimetableEntry, Teacher, Classroom, TimetableSession,
     TimetableGenerationLog, Branch, Semester
