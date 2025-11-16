@@ -1,0 +1,52 @@
+{
+  "name": "timetable-frontend",
+  "version": "1.0.0",
+  "description": "Professional Academic Timetable Management System",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "dev": "vite",
+    "build:vite": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "vue": "^3.3.4",
+    "vue-router": "^4.2.4",
+    "pinia": "^2.1.6",
+    "vuetify": "^3.3.15",
+    "@mdi/font": "^7.2.96",
+    "axios": "^1.5.0",
+    "vue-chartjs": "^5.2.0",
+    "chart.js": "^4.4.0",
+    "date-fns": "^2.30.0",
+    "lodash": "^4.17.21",
+    "papaparse": "^5.4.1",
+    "jspdf": "^2.5.1",
+    "html2canvas": "^1.4.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.3.4",
+    "vite": "^4.4.9",
+    "vite-plugin-vuetify": "^1.0.2",
+    "@vue/cli-plugin-router": "~5.0.0",
+    "@vue/cli-plugin-eslint": "~5.0.0",
+    "@vue/cli-service": "~5.0.0",
+    "@vue/eslint-config-standard": "^8.0.1",
+    "eslint": "^8.22.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-n": "^15.0.0",
+    "eslint-plugin-promise": "^6.0.0",
+    "eslint-plugin-vue": "^9.0.0",
+    "sass": "^1.66.1",
+    "unplugin-auto-import": "^0.16.6",
+    "unplugin-vue-components": "^0.25.2"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ]
+}

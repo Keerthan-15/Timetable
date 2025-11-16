@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timetable - {{ session.branch.name }} {{ session.semester }} {{ session.section }}</title>
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="header">
+        <div class="institution-name">{{ institution_info.name }}</div>
+        <div class="document-title">ACADEMIC TIMETABLE</div>
+        <div class="institution-info">
+            {{ institution_info.address }} | {{ institution_info.phone }} | {{ institution_info.email }}
+        </div>
+    </div>
+
+    <!-- Session Information -->
+    <div class="session-info">
+        <div class="info-row">
+            <span class="info-label">Branch:</span>
+            <span>{{ session.branch.code }} - {{ session.branch.name }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Semester:</span>
+            <span>{{ session.semester }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Section:</span>
+            <span>{{ session.section }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Academic Year:</span>
+            <span>{{ session.academic_year }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Generated:</span>
+            <span>{{ session.generated_at|date:"Y-m-d H:i" }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Constraint Compliance:</span>
+            <span class="compliance-badge {% if constraint_compliance.is_compliant %}compliance-success{% elif constraint_compliance.compliance_percentage > 80 %}compliance-warning{% else %}compliance-error{% endif %}">
+                {{ constraint_compliance.compliance_percentage|floatformat:1 }}% Compliant
+            </span>
+        </div>
+    </div>
+
+    <!-- Timetable Grid -->
+    <div class="timetable-container">
+        <div class="section-title">WEEKLY SCHEDULE</div>
+        <table class="timetable-table">
+            <thead>
+                <tr>
+                    <th>Day / Period</th>
+                    {% for period in periods %}
+                    <th class="period-header">{{ period }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for day in days %}
+                <tr>
+                    <td class="day-header">{{ day }}</td>
+                    {% for period in periods %}
+                    <td class="subject-cell {% if timetable_grid|lookup:day|lookup:period %}{{ timetable_grid|lookup:day|lookup:period.subject_type|slugify }}{% endif %}">
+                        {% if timetable_grid|lookup:day|lookup:period %}
+                            {% set cell = timetable_grid|lookup:day|lookup:period %}
+                            {% if cell.is_start %}
+                                <div class="subject-code">{{ cell.subject_code }}</div>
+                                <div class="subject-name">{{ cell.subject_name|truncatechars:25 }}</div>
+                                <div class="subject-details">
+                                    {{ cell.teacher_name }}<br>
+                                    {{ cell.room_number }} ({{ cell.building }})
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Statistics Section -->
+    <div class="statistics-section">
+        <div class="section-title">TIMETABLE STATISTICS</div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">{{ statistics.total_subjects }}</div>
+                <div class="stat-label">Total Subjects</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ statistics.total_hours }}</div>
+                <div class="stat-label">Total Hours/Week</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ statistics.theory_periods }}</div>
+                <div class="stat-label">Theory Periods</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ statistics.lab_blocks }}</div>
+                <div class="stat-label">Lab Blocks</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ statistics.activity_periods }}</div>
+                <div class="stat-label">Activity Periods</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ statistics.avg_teacher_hours|floatformat:1 }}</div>
+                <div class="stat-label">Avg Teacher Hours</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subject Summary -->
+    <div class="statistics-section">
+        <div class="section-title">SUBJECT SUMMARY</div>
+        <table class="summary-table">
+            <thead>
+                <tr>
+                    <th>Subject Code</th>
+                    <th>Subject Name</th>
+                    <th>Type</th>
+                    <th>Credits</th>
+                    <th>Required Hours</th>
+                    <th>Allocated Hours</th>
+                    <th>Teacher</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subject in subject_summary %}
+                <tr>
+                    <td>{{ subject.code }}</td>
+                    <td>{{ subject.name }}</td>
+                    <td>{{ subject.type|title }}</td>
+                    <td>{{ subject.credits }}</td>
+                    <td>{{ subject.hours_per_week }}</td>
+                    <td>{{ subject.allocated_hours }}</td>
+                    <td>{{ subject.teacher }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Room Utilization -->
+    {% if room_utilization %}
+    <div class="statistics-section">
+        <div class="section-title">ROOM UTILIZATION</div>
+        <table class="summary-table">
+            <thead>
+                <tr>
+                    <th>Room</th>
+                    <th>Building</th>
+                    <th>Type</th>
+                    <th>Capacity</th>
+                    <th>Utilized Hours</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for room in room_utilization %}
+                <tr>
+                    <td>{{ room.room_number }}</td>
+                    <td>{{ room.building }}</td>
+                    <td>{{ room.type|title }}</td>
+                    <td>{{ room.capacity }}</td>
+                    <td>{{ room.utilized_hours }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    <!-- Constraint Compliance Details -->
+    <div class="statistics-section">
+        <div class="section-title">CONSTRAINT COMPLIANCE</div>
+        <table class="summary-table">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Total Constraints</td>
+                    <td>{{ constraint_compliance.total_constraints }}</td>
+                </tr>
+                <tr>
+                    <td>Satisfied Constraints</td>
+                    <td>{{ constraint_compliance.satisfied }}</td>
+                </tr>
+                <tr>
+                    <td>Violated Constraints</td>
+                    <td>{{ constraint_compliance.violated }}</td>
+                </tr>
+                <tr>
+                    <td>Compliance Percentage</td>
+                    <td>{{ constraint_compliance.compliance_percentage }}%</td>
+                </tr>
+            </tbody>
+        </table>
+
+        {% if constraint_compliance.violations %}
+        <h4 style="color: #F44336; margin-top: 20px;">Violations:</h4>
+        <ul style="color: #F44336;">
+            {% for violation in constraint_compliance.violations %}
+            <li>{{ violation.message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if constraint_compliance.warnings %}
+        <h4 style="color: #FF9800; margin-top: 20px;">Warnings:</h4>
+        <ul style="color: #FF9800;">
+            {% for warning in constraint_compliance.warnings %}
+            <li>{{ warning.message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+
+    <!-- Signature Section -->
+    <div class="signature-section">
+        <div class="signature-box">
+            <div class="signature-line"></div>
+            <div class="signature-label">Head of Department</div>
+        </div>
+        <div class="signature-box">
+            <div class="signature-line"></div>
+            <div class="signature-label">Academic Coordinator</div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div>{{ institution_info.name }}</div>
+        <div>{{ institution_info.website }} | Generated on {% now "Y-m-d H:i:s" %}</div>
+        <div>Document ID: {{ session.id }}</div>
+    </div>
+
+</body>
+</html>
